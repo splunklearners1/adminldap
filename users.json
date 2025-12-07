@@ -1,0 +1,154 @@
+[
+    {
+        "dn": "o=splunk",
+        "objectclass": [
+            "top",
+            "organization"
+        ],
+        "o": "splunk",
+        "description": "Splunk Root Organization"
+    },
+    {
+        "dn": "ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "organizationalUnit"
+        ],
+        "ou": "users",
+        "description": "Users Container"
+    },
+    {
+        "dn": "cn=ldapadmin,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "ldapadmin",
+        "sn": "Admin",
+        "mail": "ldapadmin@example.com",
+        "userPassword": "password",
+        "uid": "ldapadmin"
+    },
+    {
+        "dn": "cn=john.doe,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "John Doe",
+        "sn": "Doe",
+        "mail": "john.doe@example.com",
+        "userPassword": "password123",
+        "uid": "john.doe"
+    },
+    {
+        "dn": "cn=jane.smith,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "Jane Smith",
+        "sn": "Smith",
+        "mail": "jane.smith@example.com",
+        "userPassword": "password123",
+        "uid": "jane.smith"
+    },
+    {
+        "dn": "cn=bob.wilson,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "Bob Wilson",
+        "sn": "Wilson",
+        "mail": "bob.wilson@example.com",
+        "userPassword": "password123",
+        "uid": "bob.wilson"
+    },
+    {
+        "dn": "cn=salesuser1,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "Sales User 1",
+        "sn": "User1",
+        "mail": "salesuser1@example.com",
+        "userPassword": "password123",
+        "uid": "salesuser1"
+    },
+    {
+        "dn": "cn=salesuser2,ou=users,o=splunk",
+        "objectclass": [
+            "top",
+            "person",
+            "organizationalPerson",
+            "inetOrgPerson"
+        ],
+        "cn": "Sales User 2",
+        "sn": "User2",
+        "mail": "salesuser2@example.com",
+        "userPassword": "password123",
+        "uid": "salesuser2"
+    },
+    {
+        "dn": "cn=SplunkAdmins,o=splunk",
+        "objectclass": [
+            "top",
+            "groupOfNames"
+        ],
+        "cn": "SplunkAdmins",
+        "description": "Splunk Administrators - Full Access",
+        "member": [
+            "cn=ldapadmin,ou=users,o=splunk"
+        ]
+    },
+    {
+        "dn": "cn=SplunkPowerUsers,o=splunk",
+        "objectclass": [
+            "top",
+            "groupOfNames"
+        ],
+        "cn": "SplunkPowerUsers",
+        "description": "Splunk Power Users - Advanced Access",
+        "member": [
+            "cn=john.doe,ou=users,o=splunk"
+        ]
+    },
+    {
+        "dn": "cn=SplunkUsers,o=splunk",
+        "objectclass": [
+            "top",
+            "groupOfNames"
+        ],
+        "cn": "SplunkUsers",
+        "description": "Splunk Regular Users - Basic Access",
+        "member": [
+            "cn=jane.smith,ou=users,o=splunk",
+            "cn=bob.wilson,ou=users,o=splunk"
+        ]
+    },
+    {
+        "dn": "cn=SalesUserGroup,o=splunk",
+        "objectclass": [
+            "top",
+            "groupOfNames"
+        ],
+        "cn": "SalesUserGroup",
+        "description": "Sales Team Users",
+        "member": [
+            "cn=salesuser1,ou=users,o=splunk",
+            "cn=salesuser2,ou=users,o=splunk"
+        ]
+    }
+]

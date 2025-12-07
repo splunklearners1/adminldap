@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web-ldap:
+    build: .
+    ports:
+      - "3000:3000"
+      - "1389:1389"
+    volumes:
+      - ./users.json:/app/users.json
+      - ./public:/app/public
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

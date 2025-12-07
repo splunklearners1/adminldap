@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDAP Setup & Splunk Integration Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            color: #d35400;
+        }
+
+        pre {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .step {
+            background: #e8f6f3;
+            padding: 15px;
+            border-left: 5px solid #1abc9c;
+            margin: 20px 0;
+        }
+
+        .note {
+            background: #fff8e1;
+            padding: 15px;
+            border-left: 5px solid #f1c40f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>AWS EC2 LDAP Server Setup & Splunk Integration</h1>
+
+        <h2>1. How to Install & Start LDAP on EC2</h2>
+        <p>Follow these steps to deploy the LDAP server on your AWS Linux Instance.</p>
+
+        <div class="step">
+            <h3>Step A: Transfer Files</h3>
+            <p>Use WinSCP or SCP to upload the entire project folder to your EC2 instance.</p>
+            <pre>scp -r * ec2-user@your-ec2-ip:/home/ec2-user/ldap-folder</pre>
+        </div>
+
+        <div class="step">
+            <h3>Step B: Run the Setup Script</h3>
+            <p>SSH into your instance, navigate to the folder, and run the automated script:</p>
+            <pre>
+cd /home/ec2-user/ldap-folder
+chmod +x setup_ldap_ec2.sh
+./setup_ldap_ec2.sh
+        </pre>
+            <p>This script will install Docker, Docker Compose, build the project, and start the services.</p>
+        </div>
+
+        <h2>2. Splunk Integration (Configuration File)</h2>
+        <p>To configure Splunk to use this LDAP server, you can use the provided configuration file.</p>
+
+        <div class="step">
+            <h3>Deployment Steps</h3>
+            <ol>
+                <li>Locate the <code>authentication.conf</code> file in this package.</li>
+                <li>Copy it to your Splunk Server at:
+                    <pre>$SPLUNK_HOME/etc/system/local/authentication.conf</pre>
+                    <em>(Usually <code>/opt/splunk/etc/system/local/</code> on Linux or
+                        <code>C:\Program Files\Splunk\etc\system\local\</code> on Windows)</em>
+                </li>
+                <li><strong>Restart Splunk</strong> for changes to take effect:
+                    <pre>$SPLUNK_HOME/bin/splunk restart</pre>
+                </li>
+            </ol>
+        </div>
+
+        <h3>Configuration File Content</h3>
+        <pre>
+[authentication]
+authType = LDAP
+authSettings = LocalLDAP
+
+[roleMap_LocalLDAP]
+admin = SplunkAdmins
+power = SplunkPowerUsers
+user = SalesUserGroup;SplunkUsers
+
+[LocalLDAP]
+host = 172.31.9.197  <-- CHANGE THIS TO YOUR EC2 PRIVATE/PUBLIC IP
+port = 1389
+bindDN = cn=ldapadmin,ou=users,o=splunk
+bindDNpassword = password
+userBaseDN = o=splunk
+userNameAttribute = uid
+realNameAttribute = cn
+groupBaseDN = o=splunk
+groupBaseFilter = (objectClass=groupOfNames)
+groupMemberAttribute = member
+groupNameAttribute = cn
+    </pre>
+
+        <h2>3. Users & Groups Reference</h2>
+        <p>The following users are pre-configured in the system:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>LDAP Group</th>
+                    <th>Splunk Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>salesuser1</code></td>
+                    <td>password123</td>
+                    <td>SalesUserGroup</td>
+                    <td>user</td>
+                </tr>
+                <tr>
+                    <td><code>salesuser2</code></td>
+                    <td>password123</td>
+                    <td>SalesUserGroup</td>
+                    <td>user</td>
+                </tr>
+                <tr>
+                    <td><code>ldapadmin</code></td>
+                    <td>password</td>
+                    <td>SplunkAdmins</td>
+                    <td>admin</td>
+                </tr>
+                <tr>
+                    <td><code>john.doe</code></td>
+                    <td>password123</td>
+                    <td>SplunkPowerUsers</td>
+                    <td>power</td>
+                </tr>
+                <tr>
+                    <td><code>jane.smith</code></td>
+                    <td>password123</td>
+                    <td>SplunkUsers</td>
+                    <td>user</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4. How LDAP Authentication Works</h2>
+        <p>When a user tries to log in to Splunk, the following process occurs:</p>
+
+        <ol>
+            <li><strong>Connection:</strong> Splunk connects to the LDAP server using the <em>Bind DN</em>
+                (<code>cn=ldapadmin...</code>) and password.</li>
+            <li><strong>User Search:</strong> Splunk searches for the user logging in (e.g., <code>salesuser1</code>)
+                inside the <em>User Base DN</em>.</li>
+            <li><strong>Authentication:</strong> If found, Splunk attempts to "bind" (login) as that user using the
+                password provided on the login screen. If successful, the user is authenticated.</li>
+            <li><strong>Group Lookup:</strong> Splunk searches for groups that contain this user. E.g., it finds
+                <code>SalesUserGroup</code>.</li>
+            <li><strong>Role Mapping:</strong> Splunk checks the <code>authentication.conf</code> mapping. It sees
+                <code>SalesUserGroup</code> = <code>user</code> role.</li>
+            <li><strong>Access Granted:</strong> The user is logged in and granted the permissions of the
+                <code>user</code> role.</li>
+        </ol>
+
+    </div>
+
+</body>
+
+</html>
