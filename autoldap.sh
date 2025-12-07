@@ -12,10 +12,33 @@ fi
 
 echo "--- [1/3] Installing Docker on Amazon Linux ---"
 sudo yum update -y
-sudo yum install -y docker
+
+# Check if docker is already installed
+if ! command -v docker &> /dev/null; then
+    # Try Amazon Linux 2 Extras first
+    if command -v amazon-linux-extras &> /dev/null; then
+        echo "Detected Amazon Linux 2. Using amazon-linux-extras..."
+        sudo amazon-linux-extras install docker -y
+    else
+        # Amazon Linux 2023 or Standard Yum
+        echo "Using standard yum install..."
+        sudo yum install -y docker
+    fi
+else
+    echo "Docker is already installed."
+fi
+
+# Start Docker
 sudo service docker start
 sudo systemctl enable docker
-sudo usermod -aG docker ec2-user
+sudo usermod -aG docker ec2-user || echo "ec2-user not found, skipping group add"
+
+# Verify Docker is running
+if ! sudo docker info &> /dev/null; then
+    echo "ERROR: Docker failed to start or install."
+    exit 1
+fi
+echo "Docker is running successfully."
 
 echo "--- [2/3] Installing Docker Compose ---"
 if ! command -v docker-compose &> /dev/null; then
