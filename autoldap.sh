@@ -4,11 +4,8 @@
 # Use with: git clone ... && cd ... && ./autoldap.sh
 # ============================================================
 
-# Check if running on Amazon Linux
-if [ ! -f /etc/amazon-release ]; then
-    echo "ERROR: This script is optimized for Amazon Linux only."
-    exit 1
-fi
+# Check skipped as per user request
+
 
 echo "--- [1/3] Installing Docker on Amazon Linux ---"
 sudo yum update -y
